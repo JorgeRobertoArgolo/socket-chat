@@ -84,7 +84,7 @@ public class ChatClient {
             try {
                 // Fica em loop esperando por mensagens do servidor
                 while ((line = reader.readLine()) != null) {
-                    System.out.println(line);
+                    System.out.println("\n" + line);
                 }
             } catch (IOException e) {
                 // Conexão encerrada pelo servidor

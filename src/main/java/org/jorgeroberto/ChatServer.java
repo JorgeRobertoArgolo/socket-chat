@@ -21,16 +21,22 @@ public class ChatServer {
     public static void main(String[] args) {
         // Solicitação da porta que irá se conectar
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Digite a porta para iniciar o Servidor: ");
+        System.out.println("--------------------------------------------------------------------");
+        System.out.println("                  BEM VINDO AO CHAT JAVA");
+        System.out.println("--------------------------------------------------------------------");
+        System.out.print("Por favor, digite a porta que será inicializado o Servidor: ");
         int port;
         try {
             port = Integer.parseInt(scanner.nextLine());
         } catch (NumberFormatException e) {
-            System.out.println("A porta digitada é inválida. Será usado a portão padrão 9000");
+            System.out.println("Sinto muito, a porta digitada é inválida. Será usado a portão padrão 9000");
             port = 9000;
         }
 
         try (ServerSocket serverSocket = new ServerSocket(port)) {
+            System.out.println("--------------------------------------------------------------------");
+            System.out.println("                           CHAT JAVA");
+            System.out.println("--------------------------------------------------------------------");
             // Obtém o endereço IP local do servidor
             System.out.println("Servidor de chat iniciado em " + serverSocket.getInetAddress().getHostName() + ":" + port);
 

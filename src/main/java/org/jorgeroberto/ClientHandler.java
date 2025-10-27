@@ -71,7 +71,7 @@ public class ClientHandler implements Runnable{
                     if (!userName.isEmpty()) {
                         identified = true;
                         roomManager.addClient(this, userName, currentRoom); // Adiciona ao sistema
-                        writer.println("SERVER: Seu nome de usuário é " + userName + ". Você está no lobby. Use /join #<sala> para entrar em uma sala.");
+                        writer.println("SERVER: Seu nome de usuário é " + userName + ".\nVocê está no lobby.\nUse /join #<sala> para entrar em uma sala.");
                         roomManager.broadcast(currentRoom, "SERVER: " + userName + " entrou no lobby.", this);
                     } else {
                         writer.println("SERVER: Nome de usuário não pode ser vazio. Tente novamente (NICK <nome>):");
@@ -86,11 +86,17 @@ public class ClientHandler implements Runnable{
             }
 
             while ((line = reader.readLine()) != null) {
+
+                String trimmedLine = line.trim();
+                if (trimmedLine.isEmpty()) {
+                    continue;
+                }
+
                 if (line.startsWith("/")) {
-                    handleCommand(line);
+                    handleCommand(trimmedLine);
                 } else {
                     // 3. Transmissão de Mensagens (Broadcast)
-                    roomManager.broadcast(currentRoom, "[" + userName + " em #" + currentRoom + "]: " + line, this);
+                    roomManager.broadcast(currentRoom, "[" + userName + " em #" + currentRoom + "]: " + trimmedLine, this);
                 }
             }
         } catch (IOException e) {
@@ -124,7 +130,7 @@ public class ClientHandler implements Runnable{
                     roomManager.joinRoom(this, userName, currentRoom, newRoom);
                     currentRoom = newRoom;
                 } else {
-                    sendMessage("SERVER: Comando /join inválido. Use: /join #<nome_da_sala>");
+                    sendMessage("SERVER: Comando /join inválido.\nUse: /join #<nome_da_sala>\n");
                 }
                 break;
             case "/leave":
@@ -132,7 +138,7 @@ public class ClientHandler implements Runnable{
                     roomManager.leaveRoom(this, userName, currentRoom, "lobby");
                     currentRoom = "lobby";
                 } else {
-                    sendMessage("SERVER: Você já está no lobby. Use /join #<sala> para mudar.");
+                    sendMessage("SERVER: Você já está no lobby.\nUse /join #<sala> para mudar.");
                 }
                 break;
             case "/exit":
@@ -140,7 +146,9 @@ public class ClientHandler implements Runnable{
                 sendMessage("SERVER: Encerrando conexão...");
                 try {
                     clientSocket.close();
-                } catch (IOException e) { /* ignored */ }
+                } catch (IOException e) {
+
+                }
                 break;
             default:
                 sendMessage("SERVER: Comando desconhecido ou inválido: " + command);
