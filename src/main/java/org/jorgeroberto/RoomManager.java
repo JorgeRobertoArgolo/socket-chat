@@ -1,5 +1,9 @@
 package org.jorgeroberto;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -104,6 +108,8 @@ public class RoomManager {
      * @param sender O ClientHandler do remetente (null se for mensagem do servidor), usado para não retransmitir a mensagem para ele mesmo.
      */
     public void broadcast(String roomName, String message, ClientHandler sender) {
+        logMessage(roomName, message);
+
         Set<ClientHandler> roomClients = rooms.get(roomName);
         if (roomClients != null) {
             for (ClientHandler client : roomClients) {
@@ -123,7 +129,44 @@ public class RoomManager {
         broadcast(roomName, message, null);
     }
 
-    // Opcional: Para mensagens privadas
+    /**
+     * Salva a mensagem no arquivo de log da sala correspondente.
+     * O arquivo será criado no formato: sala_nome.txt
+     * @param roomName Nome da sala.
+     * @param message Conteúdo da mensagem.
+     */
+    private void logMessage(String roomName, String message) {
+
+        // Cria o diretório de logs
+        File logDir = new File("logs");
+
+        // 2. CRIA O DIRETÓRIO SE NÃO EXISTIR
+        if (!logDir.exists()) {
+            if (logDir.mkdir()) {
+                System.out.println("SERVIDOR: Pasta 'logs/' criada com sucesso.");
+            } else {
+                System.err.println("SERVIDOR: Erro ao criar a pasta 'logs/'. Salvando na raiz.");
+                // Se não conseguir criar a pasta, salva na raiz
+                logDir = new File(".");
+            }
+        }
+
+        // 3. Define o nome do arquivo dentro da pasta 'logs/'
+        String baseFileName = roomName.replace("#", "") + ".txt";
+        File logFile = new File(logDir, baseFileName);
+
+        try (
+                FileWriter fw = new FileWriter(logFile, true);
+                PrintWriter pw = new PrintWriter(fw)
+        ) {
+            String logEntry = String.format("[%s] %s", java.time.LocalTime.now(), message);
+            pw.println(logEntry);
+
+        } catch (IOException e) {
+            System.err.println("SERVIDOR: Erro ao escrever no log da sala " + roomName + ": " + e.getMessage());
+        }
+    }
+
     public ClientHandler getClient(String userName) {
         return clients.get(userName);
     }

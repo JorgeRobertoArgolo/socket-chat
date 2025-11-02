@@ -43,3 +43,6 @@ target/
 .idea/
 .vscode/
 *.class
+
+# Arquivos não necessários
+logs/

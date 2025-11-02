@@ -37,6 +37,8 @@ public class ChatServer {
             System.out.println("--------------------------------------------------------------------");
             System.out.println("                           CHAT JAVA");
             System.out.println("--------------------------------------------------------------------");
+            System.out.println("LOGS: Os arquivos de log serão salvos em: " + new java.io.File(".").getAbsolutePath());
+
             // Obtém o endereço IP local do servidor
             System.out.println("Servidor de chat iniciado em " + serverSocket.getInetAddress().getHostName() + ":" + port);
 
