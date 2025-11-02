@@ -14,14 +14,10 @@ import java.util.Scanner;
  */
 public class ChatClient {
 
-    /**
-     * Ponto de entrada da aplicação Cliente.
-     * * @param args Argumentos de linha de comando (não utilizados).
-     */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        // 1. Configuração Inicial: Solicitar IP e Porta
+        // Configuração Inicial: Solicitar IP e Porta
         System.out.print("Digite o Endereço IP do Servidor: ");
         String serverIP = scanner.nextLine();
 
@@ -35,17 +31,17 @@ public class ChatClient {
         }
 
         try (
-                // 2. Conexão TCP
+                // Conexão TCP
                 Socket socket = new Socket(serverIP, serverPort);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)
         ) {
             System.out.println("✅ Conectado ao Servidor.");
 
-            // 3. Thread para escutar mensagens do servidor
+            // Thread para escutar mensagens do servidor
             new Thread(new ServerListener(reader)).start();
 
-            // 4. Loop principal para ler entrada do usuário e enviar ao servidor
+            // Loop principal para ler entrada do usuário e enviar ao servidor
             while (scanner.hasNextLine()) {
                 String message = scanner.nextLine();
 
@@ -54,7 +50,6 @@ public class ChatClient {
                     writer.println("/exit");
                     break;
                 }
-
                 // Envia a mensagem/comando
                 writer.println(message);
             }

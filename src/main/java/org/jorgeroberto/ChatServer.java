@@ -7,16 +7,14 @@ import java.util.Scanner;
 
 /**
  * Classe principal do Servidor de Chat.
- * Responsável por iniciar o ServerSocket, aceitar conexões
- * de múltiplos clientes e delegar a comunicação para o ClientHandler.
+ * Responsável por iniciar o ServerSocket e gerenciar a concorrência de clientes.
  */
 public class ChatServer {
     private static final RoomManager roomManager = new RoomManager();
 
     /**
      * Ponto de entrada da aplicação Servidora.
-     * Solicita a porta de comunicação e inicia o loop de aceitação de clientes.
-     * * @param args Argumentos de linha de comando (não utilizados).
+     * Inicia o loop de aceitação de clientes.
      */
     public static void main(String[] args) {
         // Solicitação da porta que irá se conectar
@@ -37,18 +35,19 @@ public class ChatServer {
             System.out.println("--------------------------------------------------------------------");
             System.out.println("                           CHAT JAVA");
             System.out.println("--------------------------------------------------------------------");
+            // Informa o local onde os logs serão salvos
             System.out.println("LOGS: Os arquivos de log serão salvos em: " + new java.io.File(".").getAbsolutePath());
 
-            // Obtém o endereço IP local do servidor
+            // Mostra o endereço IP local do servidor
             System.out.println("Servidor de chat iniciado em " + serverSocket.getInetAddress().getHostName() + ":" + port);
 
-            //Loop de gerenciamento de conexaão
+            //Loop de gerenciamento de conexão
             while (true) {
                 // Bloqueia e espera por uma conexão de cliente
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Cliente conectado de " +  clientSocket.getRemoteSocketAddress());
 
-                //Gerenciamento de Conexão Concorrente: Cria uma thread para o novo cliente
+                //Cria uma thread para gerenciar a conexão concorrente
                 ClientHandler handler = new ClientHandler(clientSocket, roomManager);
                 new Thread(handler).start();
             }

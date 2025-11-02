@@ -12,8 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Gerencia o estado centralizado do sistema de chat.
- * Lida com a criação dinâmica de salas, registro de clientes e a lógica de broadcast.
- * Usa estruturas Thread-Safe (ConcurrentHashMap e Set sincronizado) para lidar com concorrência.
+ * Lida com a criação dinâmica de salas e concorrência de acesso.
  */
 public class RoomManager {
     private final Map<String, Set<ClientHandler>> rooms;
@@ -30,10 +29,10 @@ public class RoomManager {
     }
 
     /**
-     * Adiciona um novo cliente ao sistema e à sala inicial (após a identificação).
+     * Adiciona um novo cliente ao sistema e à sala inicial.
      * @param handler O ClientHandler do novo cliente.
      * @param userName O nome de usuário escolhido.
-     * @param roomName O nome da sala inicial (normalmente 'lobby').
+     * @param roomName O nome da sala inicial ('lobby').
      */
     public void addClient(ClientHandler handler, String userName, String roomName) {
         clients.put(userName, handler);
@@ -64,18 +63,18 @@ public class RoomManager {
      * @param newRoom O nome da sala de destino.
      */
     public void joinRoom(ClientHandler handler, String userName, String oldRoom, String newRoom) {
-        // 1. Notifica e remove da sala antiga
+        // Notifica e remove da sala antiga
         broadcast(oldRoom, "SERVER: " + userName + " saiu da sala para entrar em " + newRoom, handler);
         Set<ClientHandler> oldRoomClients = rooms.get(oldRoom);
         if (oldRoomClients != null) {
             oldRoomClients.remove(handler);
         }
 
-        // 2. Adiciona à nova sala (cria se não existir)
+        // Adiciona à nova sala (cria se não existir)
         rooms.computeIfAbsent(newRoom, k -> Collections.synchronizedSet(new HashSet<>())).add(handler);
         handler.sendMessage("SERVER: Você entrou na sala " + newRoom);
 
-        // 3. Notifica a nova sala
+        // Notifica a nova sala
         broadcast(newRoom, "SERVER: " + userName + " entrou na sala.", handler);
     }
 
@@ -103,7 +102,7 @@ public class RoomManager {
 
     /**
      * Envia uma mensagem de broadcast para todos os clientes em uma sala específica.
-     * * @param roomName O nome da sala para onde a mensagem será enviada.
+     * @param roomName O nome da sala para onde a mensagem será enviada.
      * @param message A mensagem a ser transmitida.
      * @param sender O ClientHandler do remetente (null se for mensagem do servidor), usado para não retransmitir a mensagem para ele mesmo.
      */
@@ -140,7 +139,7 @@ public class RoomManager {
         // Cria o diretório de logs
         File logDir = new File("logs");
 
-        // 2. CRIA O DIRETÓRIO SE NÃO EXISTIR
+        // Cria o diretório senão existir
         if (!logDir.exists()) {
             if (logDir.mkdir()) {
                 System.out.println("SERVIDOR: Pasta 'logs/' criada com sucesso.");
@@ -151,7 +150,7 @@ public class RoomManager {
             }
         }
 
-        // 3. Define o nome do arquivo dentro da pasta 'logs/'
+        //  Define o nome do arquivo dentro da pasta 'logs/'
         String baseFileName = roomName.replace("#", "") + ".txt";
         File logFile = new File(logDir, baseFileName);
 

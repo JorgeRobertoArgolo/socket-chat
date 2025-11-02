@@ -8,7 +8,7 @@ import java.net.Socket;
 
 /**
  * Thread responsável por gerenciar a comunicação com um único cliente.
- * Lida com leitura de mensagens, processamento de comandos e transmissão de dados.
+ * Lida com leitura de comandos, identificação e encerramento.
  */
 public class ClientHandler implements Runnable{
 
@@ -41,10 +41,8 @@ public class ClientHandler implements Runnable{
         }
     }
 
-    //TODO: Revisar meu texto
     /**
-     * Métoodo principal da Thread. Contém o loop de leitura de mensagens do cliente.
-     * Gerencia a identificação inicial e o ciclo de vida da conexão.
+     * Métodoo principal da Thread. Contém o loop de leitura de mensagens do cliente.
      */
     @Override
     public void run() {
@@ -95,7 +93,7 @@ public class ClientHandler implements Runnable{
                 if (line.startsWith("/")) {
                     handleCommand(trimmedLine);
                 } else {
-                    // 3. Transmissão de Mensagens (Broadcast)
+                    // Transmissão de Mensagens (Broadcast) para a sala atual
                     roomManager.broadcast(currentRoom, "[" + userName + " em #" + currentRoom + "]: " + trimmedLine, this);
                 }
             }
@@ -116,8 +114,7 @@ public class ClientHandler implements Runnable{
     }
 
     /**
-     * Processa comandos específicos do protocolo de chat (ex: /join, /leave, /exit).
-     * * @param command A linha de comando lida do cliente.
+     * Processa comandos específicos do protocolo de chat (Regras de Comando).
      */
     private void handleCommand(String command) {
         String[] parts = command.split(" ", 2);
@@ -134,6 +131,7 @@ public class ClientHandler implements Runnable{
                 }
                 break;
             case "/private":
+                // Validação da sintaxe e lógica de envio privado
                 if (parts.length < 2) {
                     sendMessage("SERVER: Comando /private inválido. Uso: /private <usuario> <mensagem>");
                     return;
@@ -158,6 +156,7 @@ public class ClientHandler implements Runnable{
                 }
                 break;
             case "/leave":
+                // Não pode sair do lobby
                 if (!currentRoom.equals("lobby")) {
                     roomManager.leaveRoom(this, userName, currentRoom, "lobby");
                     currentRoom = "lobby";
