@@ -167,6 +167,34 @@ public class RoomManager {
         }
     }
 
+    /**
+     * Tenta enviar uma mensagem privada de um remetente para um destinatário específico.
+     * @param senderName O nome de usuário do remetente.
+     * @param targetName O nome de usuário do destinatário.
+     * @param message A mensagem privada a ser enviada.
+     * @return true se o destinatário foi encontrado e a mensagem foi enviada, false caso contrário.
+     */
+    public boolean sendPrivateMessage(String senderName, String targetName, String message) {
+        ClientHandler targetHandler = clients.get(targetName);
+        String logRoom = "private";
+
+        if (targetHandler != null) {
+            logMessage(logRoom, "[PRIVADO de " + senderName + " para " + targetName + "]: " + message);
+
+            targetHandler.sendMessage("(PRIVADO de " + senderName + "): " + message);
+
+            ClientHandler senderHandler = clients.get(senderName);
+            if (senderHandler != null) {
+                senderHandler.sendMessage("(PRIVADO para " + targetName + "): " + message);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Obtém o ClientHandler de um usuário específico.
+     */
     public ClientHandler getClient(String userName) {
         return clients.get(userName);
     }

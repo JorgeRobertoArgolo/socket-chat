@@ -133,6 +133,30 @@ public class ClientHandler implements Runnable{
                     sendMessage("SERVER: Comando /join inválido.\nUse: /join #<nome_da_sala>\n");
                 }
                 break;
+            case "/private":
+                if (parts.length < 2) {
+                    sendMessage("SERVER: Comando /private inválido. Uso: /private <usuario> <mensagem>");
+                    return;
+                }
+                String messageContent = parts[1].trim();
+                int firstSpace = messageContent.indexOf(' ');
+
+                if (firstSpace == -1) {
+                    sendMessage("SERVER: Comando /private inválido. Uso: /private <usuario> <mensagem>");
+                    return;
+                }
+
+                String targetUser = messageContent.substring(0, firstSpace).trim();
+                String privateMessage = messageContent.substring(firstSpace).trim();
+
+                if (targetUser.equalsIgnoreCase(userName)) {
+                    sendMessage("SERVER: Você não pode enviar mensagem privada para si mesmo.");
+                } else if (roomManager.sendPrivateMessage(userName, targetUser, privateMessage)) {
+                    // O RoomManager já envia o feedback para o remetente e para o destinatário
+                } else {
+                    sendMessage("SERVER: O usuário '" + targetUser + "' não foi encontrado ou está desconectado.");
+                }
+                break;
             case "/leave":
                 if (!currentRoom.equals("lobby")) {
                     roomManager.leaveRoom(this, userName, currentRoom, "lobby");
